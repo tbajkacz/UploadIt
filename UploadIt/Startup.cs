@@ -26,6 +26,7 @@ namespace UploadIt
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseMvc();
 

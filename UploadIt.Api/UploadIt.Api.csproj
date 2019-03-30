@@ -6,20 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="client_side\**" />
-    <Content Remove="client_side\**" />
-    <EmbeddedResource Remove="client_side\**" />
-    <None Remove="client_side\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Npm" Version="3.5.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\lib\" />
+    <ProjectReference Include="..\UploadIt.Services\UploadIt.Services.csproj" />
   </ItemGroup>
 
 </Project>
