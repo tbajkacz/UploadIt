@@ -7,12 +7,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace UploadIt.Pages
 {
-    public class LoginModel : PageModel
+    public class FilesModel : PageModel
     {
-        public string Username { get; set; }
-
-        public string Password { get; set; }
-
         public void OnGet()
         {
         }

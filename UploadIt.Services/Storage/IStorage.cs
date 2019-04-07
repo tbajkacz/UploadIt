@@ -9,6 +9,6 @@ namespace UploadIt.Services.Storage
 {
     public interface IStorage
     {
-        Task<bool> StoreFile(IFormFile file, string dest);
+        Task<bool> StoreFile(IFormFile file, int userId);
     }
 }
