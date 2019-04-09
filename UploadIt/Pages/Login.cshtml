@@ -3,8 +3,25 @@
 @{
 }
 
-<div class="col-md-8 offset-2">
-    <form>
+@section scripts{ 
+    <script src="~/scripts/Login.js" type="module"></script>
+}
 
+<div class="col-md-8 offset-2">
+    <form id="login_form" class="form-group" method="post">
+        <div>
+            <label asp-for="Username">Username</label>
+            <input asp-for="Username" type="text"/>
+            <span asp-validation-for="Username"></span>
+        </div>
+        <div>
+            <label asp-for="Password">Password</label>
+            <input asp-for="Password" type="password"/>
+            <span asp-validation-for="Password"></span>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary"></button>
+            <span id="login_form_status"></span>
+        </div>
     </form>
 </div>

@@ -21,10 +21,10 @@ namespace UploadIt.Services.Storage
             _cfg = cfg;
         }
 
-        public async Task<bool> StoreFile(IFormFile file, int userId)
+        public async Task<bool> StoreFile(IFormFile file, string directory)
         {
             //TODO validate user file name, look for \ etc
-            var dir = GetAbsoluteDirectory(userId.ToString());
+            var dir = GetAbsoluteDirectory(directory);
             EnsureDirectoryExists(dir);
 
             var path = Path.Combine(dir, file.FileName);
@@ -33,6 +33,27 @@ namespace UploadIt.Services.Storage
                 await file.CopyToAsync(fileStream);
             }
             return true;
+        }
+
+        public async Task<byte[]> RetrieveFile(string fileName, string directory)
+        {
+            //TODO validate filename/dir
+            var dir = GetAbsoluteDirectory(directory);
+            EnsureDirectoryExists(dir);
+
+            var path = Path.Combine(dir, fileName);
+            if (!File.Exists(path))
+            {
+                return null;
+            }
+
+            using (var fileStream = new FileStream(path, FileMode.Open))
+            using (var memStream = new MemoryStream())
+            {
+                await fileStream.CopyToAsync(memStream);
+                return memStream.GetBuffer();
+            }
+            
         }
 
         private void EnsureDirectoryExists(string absoluteDirPath)

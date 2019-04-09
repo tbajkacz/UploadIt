@@ -17,6 +17,9 @@ using UploadIt.Services.Account;
 
 namespace UploadIt.Api.Controllers
 {
+    /// <summary>
+    /// Controller used to issue jwt tokens and manage user accounts
+    /// </summary>
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -32,12 +35,25 @@ namespace UploadIt.Api.Controllers
             _config = config;
         }
 
+        /// <summary>
+        /// Authenticates the user based on the data provided in <paramref name="form"/> and returns user info and a jwt token if authentication succeeds
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns>Object containing: int userId, string userName, string email, string jwtToken</returns>
         [AllowAnonymous]
         [Route("Authenticate")]
         [HttpPost]
         public IActionResult Authenticate([FromForm]LoginForm form)
         {
-            User user = _userService.Authenticate(form.UserName, form.Password);
+            User user = null;
+            try
+            {
+                user = _userService.Authenticate(form.UserName, form.Password);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e);
+            }
             if (user == null)
             {
                 return BadRequest("Invalid credentials");
@@ -67,14 +83,20 @@ namespace UploadIt.Api.Controllers
             });
         }
 
+        /// <summary>
+        /// Registers a user using the data provided in <paramref name="form"/>
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns>String which describes if the operation succeeded</returns>
         [AllowAnonymous]
         [Route("Register")]
         [HttpPost]
         public async Task<IActionResult> Register([FromForm]RegisterForm form)
         {
+            User user;
             try
             {
-                User user = await _userService.AddUserAsync(form.UserName,
+                 user = await _userService.AddUserAsync(form.UserName,
                     form.Password,
                     form.Email);
             }
@@ -84,9 +106,19 @@ namespace UploadIt.Api.Controllers
                 return BadRequest("Invalid form data");
             }
 
+            if (user == null)
+            {
+                return BadRequest(
+                    "User with the provided username or email already exists");
+            }
+
             return Ok("Account created");
         }
 
+        /// <summary>
+        /// Deletes the user bound to the jwtToken which was used for authorization
+        /// </summary>
+        /// <returns>String which describes if the operation succeeded</returns>
         [Route("Delete")]
         [HttpDelete]
         public async Task<IActionResult> Delete()
@@ -111,6 +143,10 @@ namespace UploadIt.Api.Controllers
             return Ok($"User with id {userId} successfully deleted");
         }
 
+        /// <summary>
+        /// Returns the user data bound to the jwtToken which was used for authorization
+        /// </summary>
+        /// <returns>If succeeded returns an object containing: int userId, string userName, string email</returns>
         [Route("Get")]
         [HttpGet]
         public async Task<IActionResult> GetById()

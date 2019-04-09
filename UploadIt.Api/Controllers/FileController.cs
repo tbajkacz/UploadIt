@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UploadIt.Data.Db.Account;
 using UploadIt.Data.Models.Account;
+using UploadIt.Services.Helpers;
 using UploadIt.Services.Storage;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -48,12 +50,27 @@ namespace UploadIt.Api.Controllers
                 return BadRequest("No file uploaded");
             }
 
-            await _storage.StoreFile(file, userId);
+            await _storage.StoreFile(file, userId.ToString());
 
             return Ok("File stored on the drive");
         }
 
+        [HttpGet]
+        [Route("DownloadFile")]
+        public async Task<IActionResult> DownloadFile(
+            [FromForm] string fileName)
+        {
+            var userIdClaim =
+                User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
 
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return BadRequest("Invalid user id");
+            }
+            
+            var file = await _storage.RetrieveFile(fileName, userId.ToString());
+            return File(file, FileContentType.Get(fileName));
+        }
 
         [Route("Test")]
         public IActionResult Test(string msg)
