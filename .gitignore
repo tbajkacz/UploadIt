@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /UploadIt.Api/Storage/2
+/UploadIt.Api/Storage/1

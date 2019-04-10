@@ -50,7 +50,7 @@ namespace UploadIt.Api.Controllers
                 return BadRequest("No file uploaded");
             }
 
-            await _storage.StoreFile(file, userId.ToString());
+            await _storage.StoreFileAsync(file, userId.ToString());
 
             return Ok("File stored on the drive");
         }
@@ -68,8 +68,27 @@ namespace UploadIt.Api.Controllers
                 return BadRequest("Invalid user id");
             }
             
-            var file = await _storage.RetrieveFile(fileName, userId.ToString());
+            var file = await _storage.RetrieveFileAsync(fileName, userId.ToString());
             return File(file, FileContentType.Get(fileName));
+        }
+
+        [HttpGet]
+        [Route("GetFiles")]
+        public IActionResult GetFileList()
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return BadRequest("Invalid user id");
+            }
+
+            var fileArray = _storage.GetFileList(userId.ToString());
+
+            return Ok(new
+            {
+                files = fileArray
+            });
         }
 
         [Route("Test")]

@@ -15,6 +15,12 @@ $(document).ready(() => {
                     let formData = new FormData();
                     formData.append("file", file);
 
+                    let token = null;
+
+                    if (sessionStorage.jwtToken !== undefined) {
+                        token = sessionStorage.jwtToken;
+                    }
+
                     $.ajax({
                         method: "post",
                         url: constants.apiUrl + "/File/UploadFile",
@@ -22,7 +28,10 @@ $(document).ready(() => {
                         processData: false,
                         crossDomain: true,
                         mimeType: "multipart/form-data",
-                        data: formData
+                        data: formData,
+                        headers: {
+                            "Authorization" : "Bearer " + token
+                        }
                     });
                 }
             }

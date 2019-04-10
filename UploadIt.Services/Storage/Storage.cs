@@ -21,7 +21,7 @@ namespace UploadIt.Services.Storage
             _cfg = cfg;
         }
 
-        public async Task<bool> StoreFile(IFormFile file, string directory)
+        public async Task<bool> StoreFileAsync(IFormFile file, string directory)
         {
             //TODO validate user file name, look for \ etc
             var dir = GetAbsoluteDirectory(directory);
@@ -35,7 +35,7 @@ namespace UploadIt.Services.Storage
             return true;
         }
 
-        public async Task<byte[]> RetrieveFile(string fileName, string directory)
+        public async Task<byte[]> RetrieveFileAsync(string fileName, string directory)
         {
             //TODO validate filename/dir
             var dir = GetAbsoluteDirectory(directory);
@@ -56,6 +56,16 @@ namespace UploadIt.Services.Storage
             
         }
 
+        public string[] GetFileList(string directory)
+        {
+            var dir = GetAbsoluteDirectory(directory);
+            EnsureDirectoryExists(dir);
+
+            var filesFullPath = Directory.GetFiles(dir);
+
+            return filesFullPath.Select(f => Path.GetFileName(f)).ToArray<String>();
+        }
+
         private void EnsureDirectoryExists(string absoluteDirPath)
         {
             if (!Directory.Exists(absoluteDirPath))
@@ -66,5 +76,7 @@ namespace UploadIt.Services.Storage
 
         private string GetAbsoluteDirectory(string dir) =>
             Path.Combine(_env.ContentRootPath, _cfg.GetValue<string>("AppSettings:UserStorageDirectoryName"), dir);
+
+        
     }
 }

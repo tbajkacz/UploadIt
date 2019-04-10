@@ -13,7 +13,10 @@ $("#login_form").on("submit", (ev) => {
         url: constants.apiUrl + "/Account/Authenticate",
         contentType: false,
         processData: false,
-        data: form
+        data: form,
+        success: (data) => {
+            sessionStorage.jwtToken = data.tokenString;
+        }
     }).always((data) => {
         console.log(data.responseText);
         $("#login_form_status").text(data.responseText);

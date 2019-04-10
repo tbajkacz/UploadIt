@@ -9,8 +9,10 @@ namespace UploadIt.Services.Storage
 {
     public interface IStorage
     {
-        Task<bool> StoreFile(IFormFile file, string directory);
+        Task<bool> StoreFileAsync(IFormFile file, string directory);
 
-        Task<byte[]> RetrieveFile(string fileName, string directory);
+        Task<byte[]> RetrieveFileAsync(string fileName, string directory);
+
+        string[] GetFileList(string directory);
     }
 }
