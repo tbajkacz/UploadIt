@@ -38,6 +38,12 @@ namespace UploadIt.Services.Storage
         public async Task<byte[]> RetrieveFileAsync(string fileName, string directory)
         {
             //TODO validate filename/dir
+
+            if (fileName == null || directory == null)
+            {
+                return null;
+            }
+
             var dir = GetAbsoluteDirectory(directory);
             EnsureDirectoryExists(dir);
 

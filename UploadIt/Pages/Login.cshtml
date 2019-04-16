@@ -8,20 +8,23 @@
 }
 
 <div class="col-md-8 offset-2">
-    <form id="login_form" class="form-group" method="post">
-        <div>
-            <label asp-for="Username">Username</label>
-            <input asp-for="Username" type="text"/>
-            <span asp-validation-for="Username"></span>
+    <div class="col-md-4 offset-4" style="background: gainsboro; margin-top: 25%; border-radius: 10px; padding-top: 15px; padding-bottom: 15px">
+        <div class="text-dark text-center">
+            <h3>Login to UploadIt</h3>
         </div>
-        <div>
-            <label asp-for="Password">Password</label>
-            <input asp-for="Password" type="password"/>
-            <span asp-validation-for="Password"></span>
-        </div>
-        <div>
-            <button type="submit" class="btn btn-primary"></button>
-            <span id="login_form_status"></span>
-        </div>
-    </form>
+        <form id="login_form" method="post">
+            <div class="form-group">
+                <input class="form-control" asp-for="Username" type="text" placeholder="Username"/>
+                <span asp-validation-for="Username"></span>
+            </div>
+            <div class="form-group">
+                <input class="form-control" asp-for="Password" type="password" placeholder="Password"/>
+                <span asp-validation-for="Password"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-dark btn-block">Login</button>
+                <span class="text-danger" id="login_form_status"></span>
+            </div>
+        </form>
+    </div>
 </div>

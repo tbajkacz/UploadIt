@@ -1,5 +1,6 @@
 ﻿/// <reference path="../lib/jquery.min.js" />
-import * as constants from "./ApiUrl.js";
+import * as constants from "./Constants.js";
+import * as cookies from "./Cookies.js";
 
 $("#login_form").on("submit", (ev) => {
     ev.preventDefault();
@@ -15,10 +16,15 @@ $("#login_form").on("submit", (ev) => {
         processData: false,
         data: form,
         success: (data) => {
-            sessionStorage.jwtToken = data.tokenString;
+            cookies.addAuthCookie(data);
+            document.location = "Index";
         }
     }).always((data) => {
-        console.log(data.responseText);
-        $("#login_form_status").text(data.responseText);
+        let statusSpan = $("#login_form_status");
+        if (data.responseText) {
+            statusSpan.text(data.responseText);
+        } else {
+            statusSpan.text("");
+        }
     });
 });

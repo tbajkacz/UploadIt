@@ -39,7 +39,7 @@ namespace UploadIt.Api.Controllers
         /// Authenticates the user based on the data provided in <paramref name="form"/> and returns user info and a jwt token if authentication succeeds
         /// </summary>
         /// <param name="form"></param>
-        /// <returns>Object containing: int userId, string userName, string email, string jwtToken</returns>
+        /// <returns>Object containing: string userName, string email, string token, DateTime validTo</returns>
         [AllowAnonymous]
         [Route("Authenticate")]
         [HttpPost]
@@ -76,10 +76,10 @@ namespace UploadIt.Api.Controllers
 
             return Ok(new
             {
-                user.Id,
-                user.UserName,
-                user.Email,
-                tokenString
+                userName = user.UserName,
+                email = user.Email,
+                token = tokenString,
+                validTo = token.ValidTo
             });
         }
 

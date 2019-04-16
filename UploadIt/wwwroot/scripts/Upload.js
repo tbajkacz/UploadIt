@@ -1,5 +1,6 @@
 ﻿/// <reference path="../lib/jquery.min.js" />
-import * as constants from "./ApiUrl.js";
+import * as constants from "./Constants.js";
+import * as cookies from "./Cookies.js";
 
 $(document).ready(() => {
     document.getElementById("file_drop_zone").addEventListener("drop", (ev) => {
@@ -15,12 +16,6 @@ $(document).ready(() => {
                     let formData = new FormData();
                     formData.append("file", file);
 
-                    let token = null;
-
-                    if (sessionStorage.jwtToken !== undefined) {
-                        token = sessionStorage.jwtToken;
-                    }
-
                     $.ajax({
                         method: "post",
                         url: constants.apiUrl + "/File/UploadFile",
@@ -30,7 +25,7 @@ $(document).ready(() => {
                         mimeType: "multipart/form-data",
                         data: formData,
                         headers: {
-                            "Authorization" : "Bearer " + token
+                            "Authorization": "Bearer " + cookies.getAuthCookieTokenOrEmpty()
                         }
                     });
                 }

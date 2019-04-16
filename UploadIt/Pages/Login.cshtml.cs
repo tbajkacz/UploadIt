@@ -18,6 +18,17 @@ namespace UploadIt.Pages
 
         public void OnGet()
         {
+
+        }
+
+        public IActionResult OnPost()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            return Page();
         }
     }
 }

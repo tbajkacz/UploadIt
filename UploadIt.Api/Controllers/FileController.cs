@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Mime;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UploadIt.Data.Db.Account;
 using UploadIt.Data.Models.Account;
+using UploadIt.Data.Models.File;
 using UploadIt.Services.Helpers;
 using UploadIt.Services.Storage;
 
@@ -56,9 +58,8 @@ namespace UploadIt.Api.Controllers
         }
 
         [HttpGet]
-        [Route("DownloadFile")]
-        public async Task<IActionResult> DownloadFile(
-            [FromForm] string fileName)
+        [Route("DownloadFile/{fileName}")]
+        public async Task<IActionResult> DownloadFile(string fileName)
         {
             var userIdClaim =
                 User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
@@ -67,7 +68,13 @@ namespace UploadIt.Api.Controllers
             {
                 return BadRequest("Invalid user id");
             }
-            
+            ContentDisposition contentDisposition = new ContentDisposition
+            {
+                FileName = fileName,
+                //inline true tries to display the file in the browser
+                Inline = false
+            };
+            Response.Headers.Add("content-disposition", contentDisposition.ToString());
             var file = await _storage.RetrieveFileAsync(fileName, userId.ToString());
             return File(file, FileContentType.Get(fileName));
         }

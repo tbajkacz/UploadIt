@@ -7,10 +7,26 @@
 
 <body>
 
-    <div>
-        @RenderBody()
-    </div>
+<nav class="navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand" asp-page="Index">UploadIt</a>
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+            <a class="nav-link" asp-page="Upload">Upload</a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" asp-page="Files">Your files</a>
+        </li>
+    </ul>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item active">
+            <a class="nav-link" asp-page="Login">Login</a>
+        </li>
+    </ul>
+</nav>
+<div>
+    @RenderBody()
+</div>
 
-    <script src="~/lib/jquery.min.js" type="text/javascript"></script>
-    @RenderSection("scripts", required: false)
+<script src="~/lib/jquery.min.js" type="text/javascript"></script>
+@RenderSection("scripts", required: false)
 </body>
