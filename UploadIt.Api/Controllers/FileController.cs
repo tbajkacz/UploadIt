@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -58,12 +59,24 @@ namespace UploadIt.Api.Controllers
         }
 
         [HttpGet]
-        [Route("DownloadFile/{fileName}")]
-        public async Task<IActionResult> DownloadFile(string fileName)
+        [Route("GetDownloadToken/{fileName}")]
+        public async Task<IActionResult> GetDownloadToken(string fileName)
         {
             var userIdClaim =
                 User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
 
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return BadRequest("Invalid user id");
+            }
+
+            
+
+
+            //----download below
+            var userIdClaim =
+                User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+            
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             {
                 return BadRequest("Invalid user id");
@@ -76,7 +89,21 @@ namespace UploadIt.Api.Controllers
             };
             Response.Headers.Add("content-disposition", contentDisposition.ToString());
             var file = await _storage.RetrieveFileAsync(fileName, userId.ToString());
-            return File(file, FileContentType.Get(fileName));
+            return File(file, FileContentType.Get(fileName), fileName);
+        }
+
+        [HttpGet]
+        [Route("Download/{token}{fileName}")]
+        public IActionResult DownloadFile(string token, string fileName)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            if (!handler.CanReadToken(token))
+            {
+                return BadRequest("Invalid token");
+            }
+            
+            var claims = handler.ReadJwtToken(token).Claims;
+            var userId = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
         }
 
         [HttpGet]

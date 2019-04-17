@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using UploadIt.Data.Db.Account;
 using UploadIt.Data.Models.Account;
 using UploadIt.Services.Account;
+using UploadIt.Services.Security;
 using UploadIt.Services.Storage;
 
 namespace UploadIt.Api
@@ -51,6 +52,7 @@ namespace UploadIt.Api
             });
             services.AddScoped<IStorage, Storage>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITokenGenerator, TokenGenerator>();
 
             services.AddDbContext<AccountDbContext>(options =>
             {

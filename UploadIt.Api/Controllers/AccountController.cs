@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using UploadIt.Data.Db.Account;
 using UploadIt.Data.Models.Account;
 using UploadIt.Services.Account;
+using UploadIt.Services.Security;
 
 namespace UploadIt.Api.Controllers
 {
@@ -27,12 +28,15 @@ namespace UploadIt.Api.Controllers
     {
         private readonly IUserService _userService;
         private readonly IConfiguration _config;
+        private readonly ITokenGenerator _tokenGenerator;
 
         public AccountController(IUserService userService,
-                                 IConfiguration config)
+                                 IConfiguration config,
+                                 ITokenGenerator tokenGenerator)
         {
             _userService = userService;
             _config = config;
+            this._tokenGenerator = tokenGenerator;
         }
 
         /// <summary>
@@ -59,27 +63,20 @@ namespace UploadIt.Api.Controllers
                 return BadRequest("Invalid credentials");
             }
 
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
-            var key =
-                new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config.GetValue<string>("AppSettings:Secret")));
-            var tokenDescriptor = new SecurityTokenDescriptor
+            Claim[] claims = new[]
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(15),
-                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
+                new Claim(ClaimTypes.Name, user.Id.ToString())
             };
-            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = jwtTokenHandler.WriteToken(token);
+
+
+            var tokenInfo = _tokenGenerator.GenerateJwtToken(_config.GetValue<string>("AppSettings:Secret"), claims, 15);
 
             return Ok(new
             {
                 userName = user.UserName,
                 email = user.Email,
-                token = tokenString,
-                validTo = token.ValidTo
+                token = tokenInfo.Token,
+                validTo = tokenInfo.ValidTo
             });
         }
 
@@ -96,9 +93,9 @@ namespace UploadIt.Api.Controllers
             User user;
             try
             {
-                 user = await _userService.AddUserAsync(form.UserName,
-                    form.Password,
-                    form.Email);
+                user = await _userService.AddUserAsync(form.UserName,
+                   form.Password,
+                   form.Email);
             }
             catch (ArgumentException e)
             {
@@ -160,7 +157,7 @@ namespace UploadIt.Api.Controllers
             }
 
             var user = await _userService.GetUserByIdAsync(userId);
-            
+
             return Ok(new
             {
                 user.Id,
