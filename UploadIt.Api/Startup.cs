@@ -83,6 +83,26 @@ namespace UploadIt.Api
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };
+
+                options.Events = new JwtBearerEvents
+                {
+                    //checks whether user exists in the db, it for example prevents access after account deletion
+                    OnTokenValidated = async context =>
+                    {
+                        var userService = context.HttpContext.RequestServices
+                            .GetService<IUserService>();
+                        if (!int.TryParse(context.Principal.Identity.Name, out int userId))
+                        {
+                            context.Fail("Couldn't parse user id");
+                        }
+
+                        var user = await userService.GetUserByIdAsync(userId);
+                        if (user == null)
+                        {
+                            context.Fail("Unauthorized");
+                        }
+                    }
+                };
             });
         }
 

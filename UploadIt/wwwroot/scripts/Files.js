@@ -28,15 +28,21 @@ function requestFileList() {
     });
 }
 
-function downloadFile(name) {
+function downloadFile(fileName) {
     $.ajax({
-        url: constants.apiUrl + "/File/DownloadFile/" + name,
+        url: constants.apiUrl + "/File/GetDownloadToken",
         method: "get",
         headers: {
             "Authorization": "Bearer " + cookies.getAuthCookieTokenOrEmpty()
         },
-        success: (ret) => {
-            console.log('success');
+        success: (response) => {
+            let url = constants.apiUrl + "/File/Download" + "?token=" + response + "&fileName=" + fileName;
+
+            console.log(url);
+
+            //set the hidden <a> to the returned url and click it to trigger save file dialog
+            $("#download_action_link").attr("href", url);
+            $("#download_action_link")[0].click();
         }
     });
 }

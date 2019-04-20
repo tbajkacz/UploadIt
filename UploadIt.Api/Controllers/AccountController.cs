@@ -120,10 +120,9 @@ namespace UploadIt.Api.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete()
         {
-            var userIdClaim =
-                User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+            var userIdString = User.Identity.Name;
 
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            if (!int.TryParse(userIdString, out int userId))
             {
                 return BadRequest("Invalid user id");
             }
@@ -148,10 +147,9 @@ namespace UploadIt.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetById()
         {
-            var userIdClaim =
-                User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+            var userIdString = User.Identity.Name;
 
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            if (!int.TryParse(userIdString, out int userId))
             {
                 return BadRequest("Invalid user id");
             }

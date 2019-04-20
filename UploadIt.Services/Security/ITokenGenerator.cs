@@ -10,6 +10,6 @@ namespace UploadIt.Services.Security
 {
     public interface ITokenGenerator
     {
-        TokenInfo GenerateJwtToken(string secret, Claim[] claims, int minutesExpirationTime);
+        TokenInfo GenerateJwtToken(string secret, Claim[] claims, double minutesExpirationTime);
     }
 }
