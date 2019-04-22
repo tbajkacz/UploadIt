@@ -22,3 +22,7 @@ export function getAuthCookieTokenOrEmpty() {
     }
     return "";
 }
+
+export function deleteAuthCookie() {
+
+}

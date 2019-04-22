@@ -46,14 +46,3 @@ function downloadFile(fileName) {
         }
     });
 }
-
-//function scc(data, name) {
-//    var BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder || window.MSBlobBuilder;
-//    var builder = new BlobBuilder();
-//    builder.append(data);
-//    var blob = builder.getBlob("application/pdf");
-//    if (!name) name = "Download.bin";
-//    if (window.saveAs) {
-//        window.saveAs(blob, name);
-//    }
-//}
