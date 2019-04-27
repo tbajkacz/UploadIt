@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using UploadIt.Data.Db.Account;
-using UploadIt.Data.Models.Account;
+using UploadIt.Dto.Account;
+using UploadIt.Model.Account;
 using UploadIt.Services.Account;
 using UploadIt.Services.Security;
 
@@ -47,7 +40,7 @@ namespace UploadIt.Api.Controllers
         [AllowAnonymous]
         [Route("Authenticate")]
         [HttpPost]
-        public IActionResult Authenticate([FromForm]LoginForm form)
+        public IActionResult Authenticate([FromForm]UserLoginParams form)
         {
             User user = null;
             try
@@ -71,12 +64,12 @@ namespace UploadIt.Api.Controllers
 
             var tokenInfo = _tokenGenerator.GenerateJwtToken(_config.GetValue<string>("AppSettings:Secret"), claims, 15);
 
-            return Ok(new
+            return Ok(new UserDto
             {
-                userName = user.UserName,
-                email = user.Email,
-                token = tokenInfo.Token,
-                validTo = tokenInfo.ValidTo
+                UserName = user.UserName,
+                Email = user.Email,
+                Token = tokenInfo.Token,
+                ValidTo = tokenInfo.ValidTo
             });
         }
 
@@ -88,7 +81,7 @@ namespace UploadIt.Api.Controllers
         [AllowAnonymous]
         [Route("Register")]
         [HttpPost]
-        public async Task<IActionResult> Register([FromForm]RegisterForm form)
+        public async Task<IActionResult> Register([FromForm]UserRegisterParams form)
         {
             User user;
             try
@@ -137,31 +130,6 @@ namespace UploadIt.Api.Controllers
                 return BadRequest(e.Message);
             }
             return Ok($"User with id {userId} successfully deleted");
-        }
-
-        /// <summary>
-        /// Returns the user data bound to the jwtToken which was used for authorization
-        /// </summary>
-        /// <returns>If succeeded returns an object containing: int userId, string userName, string email</returns>
-        [Route("Get")]
-        [HttpGet]
-        public async Task<IActionResult> GetById()
-        {
-            var userIdString = User.Identity.Name;
-
-            if (!int.TryParse(userIdString, out int userId))
-            {
-                return BadRequest("Invalid user id");
-            }
-
-            var user = await _userService.GetUserByIdAsync(userId);
-
-            return Ok(new
-            {
-                user.Id,
-                user.UserName,
-                user.Email
-            });
         }
     }
 }

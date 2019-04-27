@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UploadIt.Data.Models.Account;
+using UploadIt.Model.Account;
 
 namespace UploadIt.Data.Db.Account
 {

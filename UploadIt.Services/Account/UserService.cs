@@ -1,30 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using UploadIt.Data.Db.Account;
-using UploadIt.Data.Models.Account;
+using UploadIt.Data.Repositories.Account;
+using UploadIt.Model.Account;
 
 namespace UploadIt.Services.Account
 {
     public class UserService : IUserService
     {
-        private readonly AccountDbContext _accountDb;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(AccountDbContext accountDb)
+        public UserService(IUserRepository userRepository)
         {
-            _accountDb = accountDb;
+            _userRepository = userRepository;
         }
 
         public User Authenticate(string userName, string password)
         {
             CheckArgs(userName, password);
 
-            User user =
-                _accountDb.Users.FirstOrDefault(u => u.UserName == userName);
+            User user = _userRepository.GetByUserName(userName);
+
             if (user == null || !VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
             {
                 return null;
@@ -37,7 +34,8 @@ namespace UploadIt.Services.Account
         {
             CheckArgs(userName, password, email);
 
-            if (_accountDb.Users.Any(u => u.UserName == userName && u.Email == email))
+            if (_userRepository.GetByUserName(userName) != null &&
+                _userRepository.GetByEmail(email) != null)
             {
                 return null;
             }
@@ -49,20 +47,13 @@ namespace UploadIt.Services.Account
                 PasswordHash = passwordHash,
                 UserName = userName
             };
-            await _accountDb.Users.AddAsync(user);
-            await _accountDb.SaveChangesAsync();
+            await _userRepository.AddAsync(user);
             return user;
         }
 
         public async Task DeleteUser(int id)
         {
-            var user = await GetUserByIdAsync(id);
-            if (user == null)
-            {
-                throw new ArgumentException("Invalid id parameter");
-            }
-            _accountDb.Remove(user);
-            await _accountDb.SaveChangesAsync();
+            await _userRepository.DeleteAsync(id);
         }
 
         private static void HashPassword(string password, out byte[] hash, out byte[] salt)
@@ -122,7 +113,7 @@ namespace UploadIt.Services.Account
 
         public async Task<User> GetUserByIdAsync(int id)
         {
-            return await _accountDb.Users.FindAsync(id);
+            return await _userRepository.GetByIdAsync(id);
         }
 
         /// <summary>

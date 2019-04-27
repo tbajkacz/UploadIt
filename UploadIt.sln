@@ -3,13 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UploadIt", "UploadIt\UploadIt.csproj", "{9AE2C24F-3EF6-4DD0-840E-82576768C107}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UploadIt.Web", "UploadIt\UploadIt.Web.csproj", "{9AE2C24F-3EF6-4DD0-840E-82576768C107}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UploadIt.Data", "UploadIt.Data\UploadIt.Data.csproj", "{D9C2AD2B-7E1E-4877-B631-089B32A33CC0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UploadIt.Services", "UploadIt.Services\UploadIt.Services.csproj", "{283F0A10-B1D9-40D8-A9DD-D97F41CDB200}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UploadIt.Api", "UploadIt.Api\UploadIt.Api.csproj", "{C004789B-4CD9-4148-B500-8B4250E84766}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UploadIt.Model", "UploadIt.Model\UploadIt.Model.csproj", "{1F064E60-9551-4B73-956E-46B6B7A996F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UploadIt.Dto", "UploadIt.Dto\UploadIt.Dto.csproj", "{F9885F5B-7C07-4D1A-B6EC-F96D475C1039}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{C004789B-4CD9-4148-B500-8B4250E84766}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C004789B-4CD9-4148-B500-8B4250E84766}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C004789B-4CD9-4148-B500-8B4250E84766}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F064E60-9551-4B73-956E-46B6B7A996F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F064E60-9551-4B73-956E-46B6B7A996F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F064E60-9551-4B73-956E-46B6B7A996F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F064E60-9551-4B73-956E-46B6B7A996F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9885F5B-7C07-4D1A-B6EC-F96D475C1039}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9885F5B-7C07-4D1A-B6EC-F96D475C1039}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9885F5B-7C07-4D1A-B6EC-F96D475C1039}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9885F5B-7C07-4D1A-B6EC-F96D475C1039}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

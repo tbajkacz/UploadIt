@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UploadIt.Data.Models.Account;
+﻿using System.Threading.Tasks;
+using UploadIt.Model.Account;
 
 namespace UploadIt.Services.Account
 {
