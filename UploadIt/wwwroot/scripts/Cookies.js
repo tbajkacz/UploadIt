@@ -15,6 +15,11 @@ export function getAuthCookie() {
 }
 
 
+export function isAuthCookieValid() {
+    let cookie = getAuthCookie();
+
+}
+
 export function getAuthCookieTokenOrEmpty() {
     var res = getAuthCookie();
     if (res !== null && res.token !== null) {
@@ -24,5 +29,5 @@ export function getAuthCookieTokenOrEmpty() {
 }
 
 export function deleteAuthCookie() {
-
+    document.cookie = `auth = ; expires=expires = Thu, 01 Jan 1970 00:00:00 UTC`;
 }

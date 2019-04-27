@@ -18,12 +18,11 @@ function requestFileList() {
         method: "get",
         headers: {
             "Authorization": "Bearer " + cookies.getAuthCookieTokenOrEmpty()
-        },
-        success: (data) => {
-            for (var f in data.files) {
-                //TODO 
-                $("#file_list_table tbody").append(`<tr><td><a href="javascript:void(0)">${data.files[f]}</a></td></tr>`);
-            }
+        }
+    }).done((data) => {
+        for (var f in data.files) {
+            //TODO 
+            $("#file_list_table tbody").append(`<tr><td><a href="javascript:void(0)">${data.files[f]}</a></td></tr>`);
         }
     });
 }
@@ -34,15 +33,14 @@ function downloadFile(fileName) {
         method: "get",
         headers: {
             "Authorization": "Bearer " + cookies.getAuthCookieTokenOrEmpty()
-        },
-        success: (response) => {
-            let url = constants.apiUrl + "/File/Download" + "?token=" + response + "&fileName=" + fileName;
-
-            console.log(url);
-
-            //set the hidden <a> to the returned url and click it to trigger save file dialog
-            $("#download_action_link").attr("href", url);
-            $("#download_action_link")[0].click();
         }
+    }).done((response) => {
+        let url = constants.apiUrl + "/File/Download" + "?token=" + response + "&fileName=" + fileName;
+
+        console.log(url);
+
+        //set the hidden <a> to the returned url and click it to trigger save file dialog
+        $("#download_action_link").attr("href", url);
+        $("#download_action_link")[0].click();
     });
 }
