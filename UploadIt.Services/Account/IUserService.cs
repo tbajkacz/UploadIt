@@ -1,13 +1,14 @@
 ﻿using System.Threading.Tasks;
+using UploadIt.Dto.Account;
 using UploadIt.Model.Account;
 
 namespace UploadIt.Services.Account
 {
     public interface IUserService
     {
-        User Authenticate(string userName, string password);
+        User Authenticate(UserLoginParams userParams);
 
-        Task<User> AddUserAsync(string userName, string password, string email);
+        Task<User> AddUserAsync(UserRegisterParams userParams);
 
         Task DeleteUser(int id);
 

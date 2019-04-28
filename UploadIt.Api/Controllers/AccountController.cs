@@ -45,7 +45,7 @@ namespace UploadIt.Api.Controllers
             User user = null;
             try
             {
-                user = _userService.Authenticate(form.UserName, form.Password);
+                user = _userService.Authenticate(form);
             }
             catch (ArgumentException e)
             {
@@ -86,9 +86,7 @@ namespace UploadIt.Api.Controllers
             User user;
             try
             {
-                user = await _userService.AddUserAsync(form.UserName,
-                   form.Password,
-                   form.Email);
+                user = await _userService.AddUserAsync(form);
             }
             catch (ArgumentException e)
             {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Mime;
@@ -25,16 +26,19 @@ namespace UploadIt.Api.Controllers
         private readonly IStorage _storage;
         private readonly AccountDbContext _accDb;
         private readonly ITokenGenerator _tokenGenerator;
+        private readonly ITempTokenValidator _tokenValidator;
         private readonly IConfiguration _cfg;
 
         public FileController(IStorage storage,
                               AccountDbContext accDb,
                               ITokenGenerator tokenGenerator,
+                              ITempTokenValidator tokenValidator,
                               IConfiguration cfg)
         {
             _storage = storage;
             _accDb = accDb;
             _tokenGenerator = tokenGenerator;
+            _tokenValidator = tokenValidator;
             _cfg = cfg;
         }
 
@@ -78,21 +82,13 @@ namespace UploadIt.Api.Controllers
         [Route("Download")]
         public async Task<IActionResult> DownloadFile([FromQuery]string token, [FromQuery]string fileName)
         {
-            var handler = new JwtSecurityTokenHandler();
-            if (!handler.CanReadToken(token))
+            var claimsPrincipal = _tokenValidator.Validate(token);
+            if (claimsPrincipal == null)
             {
                 return BadRequest("Invalid token");
             }
 
-            var tokenObj = handler.ReadJwtToken(token);
-
-            if (handler.ReadJwtToken(token).ValidTo < DateTime.UtcNow)
-            {
-                return Unauthorized("Token has expired");
-            }
-
-            var claims = tokenObj.Claims;
-            var userIdString = claims.FirstOrDefault(c => c.Type == ClaimTypes.UserData)?.Value;
+            var userIdString = claimsPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.UserData)?.Value;
 
             if (userIdString == null || !int.TryParse(userIdString, out int userId))
             {
@@ -111,7 +107,14 @@ namespace UploadIt.Api.Controllers
             {
                 return BadRequest("File does not exist");
             }
-            return File(file, FileContentType.Get(fileName), fileName);
+            return File(file, FileContentType.Get(fileName));
+        }
+
+        [HttpPost]
+        [Route("Delete")]
+        public IActionResult DeleteFile([FromQuery] string token, [FromQuery] string fileName)
+        {
+            return Ok();
         }
 
         [HttpGet]
@@ -125,26 +128,10 @@ namespace UploadIt.Api.Controllers
                 return BadRequest("Invalid user id");
             }
 
-            var fileArray = _storage.GetFileList(userId.ToString());
+            var dtos = _storage.GetFileList(userId.ToString());
 
-            return Ok(new
-            {
-                files = fileArray
-            });
+            return Ok(dtos);
         }
-
-        [Route("Test")]
-        public IActionResult Test(string msg)
-        {
-            var claim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-            return Ok("Hello " + claim?.Value);
-        }
-
-        [AllowAnonymous]
-        [Route("Test2")]
-        public IActionResult Test2([FromForm] IFormFile file)
-        {
-            return Ok();
-        }
+        
     }
 }

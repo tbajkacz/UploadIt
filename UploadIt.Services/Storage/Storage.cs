@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using UploadIt.Dto.Files;
 
 namespace UploadIt.Services.Storage
 {
@@ -55,19 +58,24 @@ namespace UploadIt.Services.Storage
             using (var memStream = new MemoryStream())
             {
                 await fileStream.CopyToAsync(memStream);
-                return memStream.GetBuffer();
+                return memStream.ToArray();
             }
             
         }
 
-        public string[] GetFileList(string directory)
+        public IEnumerable<FileDto> GetFileList(string directory)
         {
             var dir = GetAbsoluteDirectory(directory);
             EnsureDirectoryExists(dir);
 
             var filesFullPath = Directory.GetFiles(dir);
 
-            return filesFullPath.Select(f => Path.GetFileName(f)).ToArray<String>();
+            return filesFullPath
+                .Select(p =>
+                {
+                    var fileInfo = new FileInfo(p);
+                    return new FileDto{Name = fileInfo.Name, Size = fileInfo.Length};
+                });
         }
 
         private void EnsureDirectoryExists(string absoluteDirPath)

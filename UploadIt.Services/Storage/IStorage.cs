@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using UploadIt.Dto.Files;
 
 namespace UploadIt.Services.Storage
 {
@@ -9,6 +11,6 @@ namespace UploadIt.Services.Storage
 
         Task<byte[]> RetrieveFileAsync(string fileName, string directory);
 
-        string[] GetFileList(string directory);
+        IEnumerable<FileDto> GetFileList(string directory);
     }
 }

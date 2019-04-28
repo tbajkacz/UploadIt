@@ -13,6 +13,7 @@ using UploadIt.Data.Repositories.Account;
 using UploadIt.Services.Account;
 using UploadIt.Services.Security;
 using UploadIt.Services.Storage;
+using TokenReader = Microsoft.IdentityModel.Tokens.TokenReader;
 
 namespace UploadIt.Api
 {
@@ -43,10 +44,11 @@ namespace UploadIt.Api
                         .AllowCredentials();
                 });
             });
-            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IStorage, Storage>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ITokenGenerator, TokenGenerator>();
+            services.AddTransient<ITokenGenerator, TokenGenerator>();
+            services.AddTransient<ITempTokenValidator, JwtTempTokenValidator>();
 
             services.AddDbContext<AccountDbContext>(options =>
             {

@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using UploadIt.Data.Repositories.Account;
+using UploadIt.Dto.Account;
 using UploadIt.Model.Account;
 
 namespace UploadIt.Services.Account
@@ -16,13 +17,13 @@ namespace UploadIt.Services.Account
             _userRepository = userRepository;
         }
 
-        public User Authenticate(string userName, string password)
+        public User Authenticate(UserLoginParams userParams)
         {
-            CheckArgs(userName, password);
+            CheckArgs(userParams.UserName, userParams.Password);
 
-            User user = _userRepository.GetByUserName(userName);
+            User user = _userRepository.GetByUserName(userParams.UserName);
 
-            if (user == null || !VerifyPassword(password, user.PasswordHash, user.PasswordSalt))
+            if (user == null || !VerifyPassword(userParams.Password, user.PasswordHash, user.PasswordSalt))
             {
                 return null;
             }
@@ -30,22 +31,22 @@ namespace UploadIt.Services.Account
             return user;
         }
 
-        public async Task<User> AddUserAsync(string userName, string password, string email)
+        public async Task<User> AddUserAsync(UserRegisterParams userParams)
         {
-            CheckArgs(userName, password, email);
+            CheckArgs(userParams.UserName, userParams.Password, userParams.Email);
 
-            if (_userRepository.GetByUserName(userName) != null &&
-                _userRepository.GetByEmail(email) != null)
+            if (_userRepository.GetByUserName(userParams.UserName) != null &&
+                _userRepository.GetByEmail(userParams.Email) != null)
             {
                 return null;
             }
-            HashPassword(password, out byte[] passwordHash, out byte[] passwordSalt);
+            HashPassword(userParams.Password, out byte[] passwordHash, out byte[] passwordSalt);
             User user = new User
             {
-                Email = email,
+                Email = userParams.Email,
                 PasswordSalt = passwordSalt,
                 PasswordHash = passwordHash,
-                UserName = userName
+                UserName = userParams.UserName
             };
             await _userRepository.AddAsync(user);
             return user;

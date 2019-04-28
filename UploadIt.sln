@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UploadIt.Services", "Upload
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UploadIt.Api", "UploadIt.Api\UploadIt.Api.csproj", "{C004789B-4CD9-4148-B500-8B4250E84766}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UploadIt.Model", "UploadIt.Model\UploadIt.Model.csproj", "{1F064E60-9551-4B73-956E-46B6B7A996F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UploadIt.Model", "UploadIt.Model\UploadIt.Model.csproj", "{1F064E60-9551-4B73-956E-46B6B7A996F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UploadIt.Dto", "UploadIt.Dto\UploadIt.Dto.csproj", "{F9885F5B-7C07-4D1A-B6EC-F96D475C1039}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UploadIt.Dto", "UploadIt.Dto\UploadIt.Dto.csproj", "{F9885F5B-7C07-4D1A-B6EC-F96D475C1039}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
