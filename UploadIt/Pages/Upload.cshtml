@@ -10,10 +10,33 @@
 }
 
 <div class="col-md-8 offset-md-2">
-    <div id="file_drop_zone" style="background: aliceblue; height: 500px">
-        <p>Drop one or more files</p>
-    </div>
-    <div>
-        <button class="btn btn-dark" id="api_test">Api test</button>
+    <div class="container">
+        <h4 class="text-dark">
+            Drop one or more files into the area below
+        </h4>
+        <div id="file_drop_zone" style="background: lightgray; height: 500px; border-radius: 10px">
+        </div>
+        <div id="file_drop_list" hidden>
+            <ul>
+                <li>Files:</li>
+            </ul>
+        </div>
     </div>
 </div>
+
+<partial name="_ConfirmationModalPartial" model="@{
+                                         new ConfirmationModalViewModel
+                                         {
+                                             Title = "Upload files",
+                                             Body = "Are you sure you want to upload those files?",
+                                             CloseButton = "Cancel",
+                                             ConfirmationButton = "Upload"
+                                         }}" />
+
+<partial name="_SuccessModalPartial" model="@{
+                                       new SuccessModalViewModel
+                                       {
+                                           Title = "Success!",
+                                           Body = "Files uploaded successfully",
+                                           CloseButton = "Close"
+                                       }}" />

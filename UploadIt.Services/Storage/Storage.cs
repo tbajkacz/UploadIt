@@ -25,6 +25,10 @@ namespace UploadIt.Services.Storage
         public async Task<bool> StoreFileAsync(IFormFile file, string directory)
         {
             //TODO validate user file name, look for \ etc
+            if (AnyIsNull(file, directory))
+            {
+                return false;
+            }
             var dir = GetAbsoluteDirectory(directory);
             EnsureDirectoryExists(dir);
 
@@ -40,7 +44,7 @@ namespace UploadIt.Services.Storage
         {
             //TODO validate filename/dir
 
-            if (fileName == null || directory == null)
+            if (AnyIsNull(fileName, directory))
             {
                 return null;
             }
@@ -63,8 +67,35 @@ namespace UploadIt.Services.Storage
             
         }
 
+        public bool DeleteFile(string fileName, string directory)
+        {
+            if (AnyIsNull(fileName, directory))
+            {
+                return false;
+            }
+
+            var dir = GetAbsoluteDirectory(directory);
+            EnsureDirectoryExists(dir);
+
+            var path = Path.Combine(dir, fileName);
+
+            if (!File.Exists(path))
+            {
+                return false;
+            }
+
+            File.Delete(path);
+
+            return true;
+        }
+
         public IEnumerable<FileDto> GetFileList(string directory)
         {
+            if (AnyIsNull(directory))
+            {
+                return null;
+            }
+
             var dir = GetAbsoluteDirectory(directory);
             EnsureDirectoryExists(dir);
 
@@ -89,6 +120,8 @@ namespace UploadIt.Services.Storage
         private string GetAbsoluteDirectory(string dir) =>
             Path.Combine(_env.ContentRootPath, _cfg.GetValue<string>("AppSettings:UserStorageDirectoryName"), dir);
 
-        
+
+        private bool AnyIsNull(params object[] args) =>
+            args.Any(a => a == null);
     }
 }

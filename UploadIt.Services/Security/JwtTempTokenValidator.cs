@@ -9,14 +9,11 @@ namespace UploadIt.Services.Security
 {
     public class JwtTempTokenValidator : ITempTokenValidator
     {
-        private readonly IConfiguration _cfg;
-
-        public JwtTempTokenValidator(IConfiguration cfg)
+        public JwtTempTokenValidator()
         {
-            this._cfg = cfg;
         }
 
-        public ClaimsPrincipal Validate(string token)
+        public ClaimsPrincipal Validate(string token, string secret)
         {
             var handler = new JwtSecurityTokenHandler();
 
@@ -33,9 +30,7 @@ namespace UploadIt.Services.Security
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey =
                             new SymmetricSecurityKey(
-                                Encoding.ASCII.GetBytes(
-                                    _cfg.GetValue<string>(
-                                        "AppSettings:Secret"))),
+                                Encoding.ASCII.GetBytes(secret)),
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         RequireExpirationTime = true,

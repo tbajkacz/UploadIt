@@ -4,6 +4,6 @@ namespace UploadIt.Services.Security
 {
     public interface ITempTokenValidator
     {
-        ClaimsPrincipal Validate(string token);
+        ClaimsPrincipal Validate(string token, string secret);
     }
 }

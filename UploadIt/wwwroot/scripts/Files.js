@@ -14,7 +14,15 @@ $(document).ready(function () {
     $(document).on("click",
         "#file_list_table tbody tr td button",
         (e) => {
-            deleteFile(e.currentTarget.parentElement.parentElement.getElementsByTagName("a")[0].text);
+            let text = e.currentTarget.parentElement.parentElement.getElementsByTagName("a")[0].text;
+            console.log($("#confirmationModal .modal-body"));
+            $("#confirmationModal .modal-body").html("Do you want to delete " + text + "?");
+            $("#confirmationModal").modal("show").on("click",
+                "#confirmationModalConfirmationButton",
+                () => {
+                    deleteFile(text);
+                    $("#confirmationModal").modal("hide");
+                });
         });
 });
 
@@ -44,9 +52,6 @@ function downloadFile(fileName) {
         }
     }).done((response) => {
         let url = constants.apiUrl + "/File/Download" + "?token=" + response + "&fileName=" + fileName;
-
-        console.log(url);
-
         //set the hidden <a> to the returned url and click it to trigger save file dialog
         $("#download_action_link").attr("href", url);
         $("#download_action_link")[0].click();
@@ -64,5 +69,20 @@ function getFileSizeDisplayString(bytesSize) {
 }
 
 function deleteFile(fileName) {
+    let form = new FormData();
+    form.append("fileName", fileName);
+
+    $.ajax({
+        url: constants.apiUrl + "/File/Delete",
+        method: "post",
+        processData: false,
+        contentType: false,
+        headers: {
+            Authorization: "Bearer " + cookies.getAuthCookieTokenOrEmpty()
+        },
+        data: form
+    }).done(() => {
+        location.reload();
+    });
 
 }

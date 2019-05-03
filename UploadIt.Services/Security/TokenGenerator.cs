@@ -9,7 +9,7 @@ namespace UploadIt.Services.Security
 {
     public class TokenGenerator : ITokenGenerator
     {
-        public TokenInfo GenerateJwtToken(string secret, Claim[] claims, double minutesExpirationTime)
+        public TokenInfo GenerateToken(string secret, Claim[] claims, double minutesExpirationTime)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
             var key =

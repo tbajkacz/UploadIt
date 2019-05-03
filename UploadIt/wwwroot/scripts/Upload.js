@@ -3,32 +3,36 @@ import * as constants from "./Constants.js";
 import * as cookies from "./Cookies.js";
 
 $(document).ready(() => {
-    document.getElementById("file_drop_zone").addEventListener("drop", (ev) => {
+    $("#file_drop_zone").on("drop", ($ev) => {
         //prevents the default open file behavior
+        let ev = $ev.originalEvent;
         ev.preventDefault();
         if (ev.dataTransfer.items) {
-            uploadFiles(ev.dataTransfer.items);
+            appendListItemsFromDataTransferItems(ev.dataTransfer.items, $("#confirmationModal ul"));
+
+            //TODO this really needs a in progress modal
+            $("#confirmationModal").modal("show").on("click",
+                "#confirmationModalConfirmationButton", () => {
+                    uploadFiles(ev.dataTransfer.items);
+                    $("#confirmationModal").modal("hide");
+                });
         }
     });
-    //TODO modal window on drop with a submit button
 
-    document.getElementById("file_drop_zone").addEventListener("dragover", (ev) => {
+    $("#file_drop_zone").on("dragover", (ev) => {
         ev.preventDefault();
     });
-
-    $("#api_test").on("click",
-        () => {
-            $.ajax({
-                method: "get",
-                url: constants.apiUrl + "/File/Test",
-                data: {
-                    message: "hello"
-                }
-            }).then((response) => {
-                console.log(response);
-            });
-        });
 });
+
+function appendListItemsFromDataTransferItems(dataTransferItems, $ul) {
+    $ul.empty();
+    for (var i = 0; i < dataTransferItems.length; i++) {
+        if (dataTransferItems[i].kind === 'file') {
+            let file = dataTransferItems[i].getAsFile();
+            $ul.append(`<li>${file.name}</li>`);
+        }
+    }
+}
 
 function uploadFiles(dataTransferItems) {
     if (dataTransferItems) {
@@ -36,7 +40,6 @@ function uploadFiles(dataTransferItems) {
             // If dropped items aren't files, reject them
             if (dataTransferItems[i].kind === 'file') {
                 let file = dataTransferItems[i].getAsFile();
-                console.log(`file[${i}].name = ${file.name}`);
 
                 let formData = new FormData();
                 formData.append("file", file);
@@ -46,12 +49,13 @@ function uploadFiles(dataTransferItems) {
                     url: constants.apiUrl + "/File/UploadFile",
                     contentType: false,
                     processData: false,
-                    crossDomain: true,
                     mimeType: "multipart/form-data",
                     data: formData,
                     headers: {
                         "Authorization": "Bearer " + cookies.getAuthCookieTokenOrEmpty()
                     }
+                }).done(() => {
+                    $("#successDialog").modal("show");
                 });
             }
         }

@@ -8,17 +8,26 @@
     <script src="~/scripts/Files.js" type="module"></script>
     <script src="~/scripts/RedirectToLogin.js" type="module"></script>
 }
-<a></a>
 <div class="col-md-8 offset-2">
-    <table class="table" id="file_list_table">
-        <thead class="thead-light">
+    <div class="container">
+        <table class="table" id="file_list_table">
+            <thead class="thead-light">
             <tr>
-                <th>Name</th>
-                <th>Size</th>
-                <th></th>
+                <th class="col-md-8">Name</th>
+                <th class="col-md-2">Size</th>
+                <th class="col-md-2"></th>
             </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <a id="download_action_link" hidden></a>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <a id="download_action_link" hidden></a>
+    </div>
 </div>
+
+<partial name="_ConfirmationModalPartial" model="@{new ConfirmationModalViewModel
+                                                     {
+                                                         Title = "Are you sure?",
+                                                         Body = "Do you want to delete --Javascript--",
+                                                         CloseButton = "Cancel",
+                                                         ConfirmationButton = "Delete"
+                                                     }}"/>

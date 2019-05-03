@@ -17,7 +17,7 @@ $("#login_form").on("submit", (ev) => {
         data: form,
         success: (data) => {
             cookies.addAuthCookie(data);
-            window.location = "Index";
+            location = "Index";
         }
     }).always((data) => {
         let statusSpan = $("#login_form_status");

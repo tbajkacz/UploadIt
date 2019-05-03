@@ -11,6 +11,8 @@ namespace UploadIt.Services.Storage
 
         Task<byte[]> RetrieveFileAsync(string fileName, string directory);
 
+        bool DeleteFile(string fileName, string directory);
+
         IEnumerable<FileDto> GetFileList(string directory);
     }
 }

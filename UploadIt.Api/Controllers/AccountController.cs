@@ -62,7 +62,7 @@ namespace UploadIt.Api.Controllers
             };
 
 
-            var tokenInfo = _tokenGenerator.GenerateJwtToken(_config.GetValue<string>("AppSettings:Secret"), claims, 15);
+            var tokenInfo = _tokenGenerator.GenerateToken(_config.GetValue<string>("AppSettings:Secret"), claims, 15);
 
             return Ok(new UserDto
             {

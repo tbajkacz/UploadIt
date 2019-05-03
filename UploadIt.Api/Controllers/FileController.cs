@@ -71,7 +71,7 @@ namespace UploadIt.Api.Controllers
             };
 
             var downloadToken = _tokenGenerator
-                .GenerateJwtToken(
+                .GenerateToken(
                 _cfg.GetValue<string>("AppSettings:Secret"), claims, 0.5);
 
             return Ok(downloadToken.Token);
@@ -82,7 +82,7 @@ namespace UploadIt.Api.Controllers
         [Route("Download")]
         public async Task<IActionResult> DownloadFile([FromQuery]string token, [FromQuery]string fileName)
         {
-            var claimsPrincipal = _tokenValidator.Validate(token);
+            var claimsPrincipal = _tokenValidator.Validate(token, _cfg.GetValue<string>("AppSettings:Secret"));
             if (claimsPrincipal == null)
             {
                 return BadRequest("Invalid token");
@@ -112,18 +112,38 @@ namespace UploadIt.Api.Controllers
 
         [HttpPost]
         [Route("Delete")]
-        public IActionResult DeleteFile([FromQuery] string token, [FromQuery] string fileName)
+        public IActionResult DeleteFile([FromForm] string fileName)
         {
-            return Ok();
+            if (fileName == null)
+            {
+                return BadRequest("Invalid query parameter");
+            }
+
+            var claims = User.Claims;
+
+            if (claims == null)
+            {
+                return BadRequest("Invalid token");
+            }
+
+            var userIdString = claims
+                .SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+            if (!_storage.DeleteFile(fileName, userIdString))
+            {
+                return BadRequest("Couldn't delete specified file");
+            }
+
+            return Ok("File successfully deleted");
         }
 
         [HttpGet]
         [Route("GetFiles")]
         public IActionResult GetFileList()
         {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+            var userIdString = User.Identity.Name;
 
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            if (userIdString == null || !int.TryParse(userIdString, out int userId))
             {
                 return BadRequest("Invalid user id");
             }
