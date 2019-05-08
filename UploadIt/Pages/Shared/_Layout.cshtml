@@ -3,6 +3,7 @@
 
 <head>
     <link href="~/lib/bootstrap.min.css" rel="stylesheet" />
+
     @RenderSection("styles", required: false)
 </head>
 
@@ -22,12 +23,15 @@
 
     </ul>
 </nav>
-<div>
+<div class="col-md-8 offset-2">
     @RenderBody()
 </div>
+    
+<partial name="_LoadingModalPartial"/>
 
 <script src="~/lib/jquery.min.js" type="text/javascript"></script>
 <script src="~/lib/bootstrap.js"></script>
 <script src="~/scripts/Navbar.js" type="module"></script>
+<script src="~/scripts/AjaxProgressIndicator.js"></script>
 @RenderSection("scripts", required: false)
 </body>
