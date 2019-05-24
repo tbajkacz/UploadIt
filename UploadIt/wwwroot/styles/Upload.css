@@ -1,0 +1,4 @@
+﻿.file-drop {
+    background: lightgray;
+    height: calc(100vh - 56px);
+}

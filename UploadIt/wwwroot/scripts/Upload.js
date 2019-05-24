@@ -7,10 +7,10 @@ $(document).ready(() => {
         //prevents the default open file behavior
         let ev = $ev.originalEvent;
         ev.preventDefault();
-        if (ev.dataTransfer.items) {
+        if (checkIfContainsFiles(ev.dataTransfer.items)) {
             appendListItemsFromDataTransferItems(ev.dataTransfer.items, $("#confirmationModal ul"));
+            
 
-            //TODO this really needs a in progress modal
             $("#confirmationModal").modal("show").on("click",
                 "#confirmationModalConfirmationButton", () => {
                     uploadFiles(ev.dataTransfer.items);
@@ -37,8 +37,7 @@ function appendListItemsFromDataTransferItems(dataTransferItems, $ul) {
 function uploadFiles(dataTransferItems) {
     if (dataTransferItems) {
         for (var i = 0; i < dataTransferItems.length; i++) {
-            // If dropped items aren't files, reject them
-            if (dataTransferItems[i].kind === 'file') {
+            if (isFile(dataTransferItems[i])) {
                 let file = dataTransferItems[i].getAsFile();
 
                 let formData = new FormData();
@@ -60,4 +59,21 @@ function uploadFiles(dataTransferItems) {
             }
         }
     }
+}
+
+function checkIfContainsFiles(dataTransferItems) {
+    if (dataTransferItems) {
+        for (var i = 0; i < dataTransferItems.length; i++) {
+            if (isFile(dataTransferItems[i])) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+function isFile(dataTransferItem) {
+    //TODO RELEASE webkitGetAsEntry does not support all browsers
+    return dataTransferItem.kind === 'file' && dataTransferItem.webkitGetAsEntry().isFile;
 }

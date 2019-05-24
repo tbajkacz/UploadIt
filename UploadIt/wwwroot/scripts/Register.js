@@ -12,6 +12,8 @@ $("#register_form").on("submit", (ev) => {
     $.ajax({
         url: constants.apiUrl + "/Account/Register",
         method: "post",
+        processData: false,
+        contentType: false,
         data: form,
         success: (resp) => {
             console.log(resp);

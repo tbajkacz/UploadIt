@@ -4,4 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\UploadIt.Dto\UploadIt.Dto.csproj" />
+  </ItemGroup>
+
 </Project>

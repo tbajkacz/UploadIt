@@ -40,7 +40,7 @@ namespace UploadIt.Data.Repositories.Account
         public async Task DeleteAsync(int id)
         {
             var user = await GetByIdAsync(id);
-            _accountDb.Remove(user);
+            _accountDb.Users.Remove(user);
             await _accountDb.SaveChangesAsync();
         }
     }

@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using UploadIt.Data.Repositories.Registration;
 using UploadIt.Dto.Account;
 using UploadIt.Model.Account;
+using UploadIt.Model.Registration;
 using UploadIt.Services.Account;
 using UploadIt.Services.Security;
 
@@ -22,14 +24,17 @@ namespace UploadIt.Api.Controllers
         private readonly IUserService _userService;
         private readonly IConfiguration _config;
         private readonly ITokenGenerator _tokenGenerator;
+        private readonly IRegistrationRepository _registrationRepository;
 
         public AccountController(IUserService userService,
                                  IConfiguration config,
-                                 ITokenGenerator tokenGenerator)
+                                 ITokenGenerator tokenGenerator,
+                                 IRegistrationRepository registrationRepository)
         {
             _userService = userService;
             _config = config;
             this._tokenGenerator = tokenGenerator;
+            this._registrationRepository = registrationRepository;
         }
 
         /// <summary>
@@ -58,7 +63,8 @@ namespace UploadIt.Api.Controllers
 
             Claim[] claims = new[]
             {
-                new Claim(ClaimTypes.Name, user.Id.ToString())
+                new Claim(ClaimTypes.Name, user.Id.ToString()),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
 
@@ -73,34 +79,35 @@ namespace UploadIt.Api.Controllers
             });
         }
 
-        /// <summary>
-        /// Registers a user using the data provided in <paramref name="form"/>
-        /// </summary>
-        /// <param name="form"></param>
-        /// <returns>String which describes if the operation succeeded</returns>
+        
+
         [AllowAnonymous]
         [Route("Register")]
         [HttpPost]
-        public async Task<IActionResult> Register([FromForm]UserRegisterParams form)
+        public async Task<IActionResult> Register(
+            [FromForm] UserRegisterParams form)
         {
-            User user;
+            if (_userService.UsernameOrEmailTaken(form.UserName, form.Email))
+            {
+                return BadRequest("Username or email already taken");
+            }
+
             try
             {
-                user = await _userService.AddUserAsync(form);
+                await _registrationRepository.AddAsync(new RegistrationRequest
+                {
+                    Email = form.Email,
+                    Password = form.Password,
+                    UserName = form.UserName
+                });
             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e);
-                return BadRequest("Invalid form data");
+                return BadRequest("Invalid data provided");
             }
 
-            if (user == null)
-            {
-                return BadRequest(
-                    "User with the provided username or email already exists");
-            }
-
-            return Ok("Account created");
+            return Ok("Account creation request sent");
         }
 
         /// <summary>

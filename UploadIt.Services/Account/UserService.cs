@@ -35,8 +35,7 @@ namespace UploadIt.Services.Account
         {
             CheckArgs(userParams.UserName, userParams.Password, userParams.Email);
 
-            if (_userRepository.GetByUserName(userParams.UserName) != null &&
-                _userRepository.GetByEmail(userParams.Email) != null)
+            if (UsernameOrEmailTaken(userParams.UserName, userParams.Email))
             {
                 return null;
             }
@@ -46,7 +45,8 @@ namespace UploadIt.Services.Account
                 Email = userParams.Email,
                 PasswordSalt = passwordSalt,
                 PasswordHash = passwordHash,
-                UserName = userParams.UserName
+                UserName = userParams.UserName,
+                Role = UserRoles.Default
             };
             await _userRepository.AddAsync(user);
             return user;
@@ -135,6 +135,12 @@ namespace UploadIt.Services.Account
                     throw new ArgumentException("String argument cannot be whitespace or empty");
                 }
             }
+        }
+
+        public bool UsernameOrEmailTaken(string username, string email)
+        {
+            return _userRepository.GetByUserName(username) != null &&
+                   _userRepository.GetByEmail(email) != null;
         }
     }
 }

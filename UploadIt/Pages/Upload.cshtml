@@ -3,15 +3,17 @@
 @{
 }
 
-@section scripts
-    {
+@section scripts{
     <script src="~/scripts/Upload.js" type="module"></script>
     <script src="~/scripts/RedirectToLogin.js" type="module"></script>
 }
-    <div id="file_drop_zone" style="background: lightgray;">
+@section styles{ 
+    <link href="~/styles/Upload.css" rel="stylesheet" />
+}
+    <div class="file-drop" id="file_drop_zone">
         <div class="col-md-8 offset-md-2">
             <div class="container">
-                <h4 class="text-dark">
+                <h4 class="text-dark text-center">
                     Drop one or more files into the area below
                 </h4>
             </div>

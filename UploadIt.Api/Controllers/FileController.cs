@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using UploadIt.Data.Db.Account;
+using UploadIt.Model.Account;
 using UploadIt.Services.Helpers;
 using UploadIt.Services.Security;
 using UploadIt.Services.Storage;
@@ -54,7 +55,10 @@ namespace UploadIt.Api.Controllers
                 return BadRequest("No file uploaded");
             }
 
-            await _storage.StoreFileAsync(file, userId);
+            if (!await _storage.StoreFileAsync(file, userId))
+            {
+                return BadRequest("Couldn't store the provided file");
+            }
 
             return Ok("File stored on the drive");
         }
@@ -77,6 +81,7 @@ namespace UploadIt.Api.Controllers
             return Ok(downloadToken.Token);
         }
 
+        //TODO authorize with header and make the download go to blob
         [HttpGet]
         [AllowAnonymous]
         [Route("Download")]

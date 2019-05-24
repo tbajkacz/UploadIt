@@ -9,7 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using UploadIt.Data.Db.Account;
+using UploadIt.Data.Db.Registration;
 using UploadIt.Data.Repositories.Account;
+using UploadIt.Data.Repositories.Registration;
 using UploadIt.Services.Account;
 using UploadIt.Services.Security;
 using UploadIt.Services.Storage;
@@ -44,6 +46,8 @@ namespace UploadIt.Api
                         .AllowCredentials();
                 });
             });
+            services
+                .AddScoped<IRegistrationRepository, RegistrationRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IStorage, Storage>();
             services.AddScoped<IUserService, UserService>();
@@ -54,6 +58,16 @@ namespace UploadIt.Api
             {
                 options.UseSqlServer(
                     Configuration.GetConnectionString("UploadIt"), builder =>
+                    {
+                        builder.MigrationsAssembly("UploadIt.Data");
+                    });
+            });
+
+            services.AddDbContext<RegistrationDbContext>(options =>
+            {
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("UploadIt"),
+                    builder =>
                     {
                         builder.MigrationsAssembly("UploadIt.Data");
                     });
@@ -82,7 +96,7 @@ namespace UploadIt.Api
 
                 options.Events = new JwtBearerEvents
                 {
-                    //checks whether user exists in the db, it for example prevents access after account deletion
+                    //checks whether user exists in the db it for example prevents access after account deletion
                     OnTokenValidated = async context =>
                     {
                         var userService = context.HttpContext.RequestServices
