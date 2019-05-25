@@ -8,7 +8,7 @@ $(document).ready(function () {
     $(document).on("click",
         "#file_list_table tbody tr td a",
         (e) => {
-            downloadFile(e.currentTarget.text);
+            downloadBlob(e.currentTarget.text);
         });
 
     $(document).on("click",
@@ -43,21 +43,6 @@ function requestFileList() {
     });
 }
 
-function downloadFile(fileName) {
-    $.ajax({
-        url: constants.apiUrl + "/File/GetDownloadToken",
-        method: "get",
-        headers: {
-            "Authorization": "Bearer " + cookies.getAuthCookieTokenOrEmpty()
-        }
-    }).done((response) => {
-        let url = constants.apiUrl + "/File/Download" + "?token=" + response + "&fileName=" + fileName;
-        //set the hidden <a> to the returned url and click it to trigger save file dialog
-        $("#download_action_link").attr("href", url);
-        $("#download_action_link")[0].click();
-    });
-}
-
 function getFileSizeDisplayString(bytesSize) {
     let size = bytesSize / (1024 * 1024);
     let unitString = " MB";
@@ -85,4 +70,30 @@ function deleteFile(fileName) {
         location.reload();
     });
 
+}
+
+function downloadBlob(fileName) {
+    $.ajax({
+        method: "get",
+        //special characters need to be encoded in query strings
+        url: constants.apiUrl + "/File/DownloadBlob?fileName=" + encodeURIComponent(fileName),
+        headers: {
+            Authorization: "Bearer " + cookies.getAuthCookieTokenOrEmpty()
+        }
+    }).done((response, status, jqXHR) => {
+        let contentType = jqXHR.getResponseHeader("content-type");
+        let blob = new Blob([response], { type: contentType });
+        let url = URL.createObjectURL(blob);
+        let contentDisposition = jqXHR.getResponseHeader("Content-Disposition");
+        let pair = contentDisposition.substr(contentDisposition.indexOf("filename="));
+        let receivedFilename = pair.substr(pair.indexOf("=") + 1);
+        console.log(receivedFilename);
+
+        var a = window.document.createElement("a");
+        a.href = url;
+        a.download = receivedFilename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        });
 }

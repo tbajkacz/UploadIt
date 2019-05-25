@@ -52,7 +52,6 @@ namespace UploadIt.Api
             services.AddScoped<IStorage, Storage>();
             services.AddScoped<IUserService, UserService>();
             services.AddTransient<ITokenGenerator, TokenGenerator>();
-            services.AddTransient<ITempTokenValidator, JwtTempTokenValidator>();
 
             services.AddDbContext<AccountDbContext>(options =>
             {

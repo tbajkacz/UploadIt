@@ -27,19 +27,16 @@ namespace UploadIt.Api.Controllers
         private readonly IStorage _storage;
         private readonly AccountDbContext _accDb;
         private readonly ITokenGenerator _tokenGenerator;
-        private readonly ITempTokenValidator _tokenValidator;
         private readonly IConfiguration _cfg;
 
         public FileController(IStorage storage,
                               AccountDbContext accDb,
                               ITokenGenerator tokenGenerator,
-                              ITempTokenValidator tokenValidator,
                               IConfiguration cfg)
         {
             _storage = storage;
             _accDb = accDb;
             _tokenGenerator = tokenGenerator;
-            _tokenValidator = tokenValidator;
             _cfg = cfg;
         }
 
@@ -63,56 +60,33 @@ namespace UploadIt.Api.Controllers
             return Ok("File stored on the drive");
         }
 
+        [Route("DownloadBlob")]
         [HttpGet]
-        [Route("GetDownloadToken")]
-        public IActionResult GetDownloadToken()
+        public async Task<IActionResult> Download([FromQuery] string fileName)
         {
-            var userId = User.Identity.Name;
-
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.UserData, userId),
-            };
-
-            var downloadToken = _tokenGenerator
-                .GenerateToken(
-                _cfg.GetValue<string>("AppSettings:Secret"), claims, 0.5);
-
-            return Ok(downloadToken.Token);
-        }
-
-        //TODO authorize with header and make the download go to blob
-        [HttpGet]
-        [AllowAnonymous]
-        [Route("Download")]
-        public async Task<IActionResult> DownloadFile([FromQuery]string token, [FromQuery]string fileName)
-        {
-            var claimsPrincipal = _tokenValidator.Validate(token, _cfg.GetValue<string>("AppSettings:Secret"));
-            if (claimsPrincipal == null)
-            {
-                return BadRequest("Invalid token");
-            }
-
-            var userIdString = claimsPrincipal.Claims.SingleOrDefault(c => c.Type == ClaimTypes.UserData)?.Value;
+            var userIdString = User.Identity.Name;
 
             if (userIdString == null || !int.TryParse(userIdString, out int userId))
             {
                 return BadRequest("Invalid token");
             }
-            
+            var file = await _storage.RetrieveFileAsync(fileName, userIdString);
+            if (file == null)
+            {
+                return BadRequest("File does not exist");
+            }
+
             ContentDisposition contentDisposition = new ContentDisposition
             {
                 FileName = fileName,
                 //inline true tries to display the file in the browser
                 Inline = false
             };
-            Response.Headers.Add("content-disposition", contentDisposition.ToString());
-            var file = await _storage.RetrieveFileAsync(fileName, userIdString);
-            if (file == null)
-            {
-                return BadRequest("File does not exist");
-            }
-            return File(file, FileContentType.Get(fileName));
+            Response.Headers.Add("Content-Disposition", contentDisposition.ToString());
+            //exposes the content-disposition header to javascript code
+            Response.Headers.Add("Access-Control-Expose-Headers", "Content-Disposition");
+
+            return File(file, FileContentType.Get(fileName)); ;
         }
 
         [HttpPost]
